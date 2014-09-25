@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Python Testing</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css">
+      @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .remark-slide-content {
+        font-size:16px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+
+#Python Testing
+###TJ Kells
+
+---
+
+
+
+
+
+
+
+##What is 'testing'?
+
+#####_The practice of writing code (separate from your actual application code) that invokes the code it tests to help determine if there are any errors. It does not prove that code is correct (which is only possible under very restricted circumstances). It merely reports if the conditions the tester thought of are handled correctly._ -__Jeff Knupp__
+
+#####_Test-driven development is not about testing. Test-driven development is about development (and design), specifically improving the quality and design of code. The resulting unit tests are just an extremely useful by-product._ -__Jason Diamond__
+
+---
+
+
+
+
+
+
+
+##Unit Testing vs Integration Testing
+* Unit testing: the act of testing a "unit" in your application. In this context, a "unit" is often a function or a method of a class instance
+* Integration testing: the act of testing interaction between two or more "units". Integration tests verify that the components of your application work together. Common examples: HTTP requests, DB connections, email, eg.
+
+---
+
+
+
+
+
+class: center, middle
+#Example Frameworks
+---
+
+
+
+
+
+
+
+
+##PyUnit AKA unittest
+
+```python
+import unittest
+
+def is_odd(n):
+    return n % 2 == 1
+
+class is_oddTests(unittest.TestCase):
+
+    def testOne(self):
+        self.failUnless(is_odd(1))
+
+    def testTwo(self):
+        self.failIf(is_odd(2))
+
+def main():
+    unittest.main()
+
+if __name__ == '__main__':
+    main()
+
+```
+__Pros__:
+* Very similar to all of the xUnit variants in the wild
+* Part of the standard library
+
+__Cons__:
+* LOTS of boilerplate
+* Has a tendency to become slow(er) over time than pytest
+---
+
+
+
+
+
+
+
+##Pytest
+
+```python
+def is_odd(n):
+    return n % 2 == 1
+
+# tests
+def test_is_odd():
+    assert is_odd(3) == False
+    assert is_odd(2) == False
+```
+
+Running pytest
+```bash
+python -m pytest test.py
+```
+__Pros__:
+* Very little boilerplate
+* Lots of support for complex feature sets via plugins
+
+__Cons__:
+* Fair amount of "magic" behind the scenes, can sometimes obscure error output/problems
+* Not built-in to the standard library (meh.)
+---
+
+
+
+
+
+##Doctest
+
+```python
+def is_odd(n):
+    """Lines that start with >>> are executed and the output is asserted
+
+    >>> is_odd(4)
+    False
+    >>> is_odd(1)
+    True
+    >>> is_odd('fox')
+    Traceback (most recent call last):
+        ...
+    TypeError: not all arguments converted during string formatting
+    """
+    return n % 2 == 1
+```
+Running doctest
+```bash
+python -m doctest test.py
+```
+__Pros__:
+* Docstrings become a good source of truth as the examples cannot be wrong
+* Easy to understand, very little setup
+
+__Cons__:
+* Docstrings can suffer information overload and not be useful for docs anymore
+* Difficult to express complex scenarios ie - funcargs, mocks, etc
+---
+
+
+
+
+
+##What to test?
+* Things that fail!
+```python
+assert randrange(10) == 5
+```
+* A unit test that has never failed has never provided _information_, ipso facto, tests that have a higher likelihood of failure, have a higher chance of having value.
+*
+---
+
+
+
+
+
+
+##What not to test?
+* Things that have slim/no chance of failure!
+```python
+assert 1 + 1 == 2
+```
+---
+
+
+
+
+
+
+#Resources
+* http://pythontesting.net/
+* http://docs.python-guide.org/en/latest/writing/tests/
+
+
+
+    </textarea>
+    <script src="http://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
