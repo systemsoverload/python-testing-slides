@@ -8,21 +8,92 @@
       @import url(http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
       @import url(http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
 
-      body { font-family: 'Droid Serif'; }
+      body {
+        font-family: 'Droid Serif';
+      }
       h1, h2, h3 {
         font-family: 'Yanone Kaffeesatz';
-        font-weight: normal;
+        font-weight: 400;
+        margin-bottom: 0;
       }
-      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
-      .remark-slide-content {
-        font-size:16px;
+      .remark-slide-content h1 { font-size: 3em; }
+      .remark-slide-content h2 { font-size: 2em; }
+      .remark-slide-content h3 { font-size: 1.6em; }
+      .remark-slide-content { font-size: 16px;}
+      .footnote {
+        position: absolute;
+        bottom: 3em;
+      }
+      li p { line-height: 1.25em; }
+      .red { color: #fa0000; }
+      .large { font-size: 2em; }
+      a, a > code {
+        color: rgb(249, 38, 114);
+        text-decoration: none;
+      }
+      code {
+        -moz-border-radius: 5px;
+        -web-border-radius: 5px;
+        background: #e7e8e2;
+        border-radius: 5px;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono';}
+      .remark-code-line-highlighted     { background-color: #373832; }
+      .pull-left {
+        float: left;
+        width: 47%;
+      }
+      .pull-right {
+        float: right;
+        width: 47%;
+      }
+      .pull-right ~ p {
+        clear: both;
+      }
+      #slideshow .slide .content code {
+        font-size: 0.6em;
+      }
+      #slideshow .slide .content pre code {
+        font-size: 0.9em;
+        padding: 15px;
+      }
+      .inverse {
+        background: #272822;
+        color: #777872;
+        text-shadow: 0 0 20px #333;
+      }
+      .inverse h1, .inverse h2 {
+        color: #f3f3f3;
+        line-height: 0.8em;
+      }
+
+      /* Slide-specific styling */
+      #slide-inverse .footnote {
+        bottom: 12px;
+        left: 20px;
+      }
+
+      /* Two-column layout */
+      .left-column {
+        color: #777;
+        width: 20%;
+        height: 92%;
+        float: left;
+      }
+      .left-column h2:last-of-type, .left-column h3:last-child {
+        color: #000;
+      }
+      .right-column {
+        width: 75%;
+        float: right;
+        padding-top: 1em;
       }
     </style>
   </head>
   <body>
     <textarea id="source">
 
-class: center, middle
+class: center, middle, inverse
 
 #Python Testing
 ###TJ Kells
@@ -35,16 +106,35 @@ class: center, middle
 
 
 
-##What is 'testing'?
 
-#####_The practice of writing code (separate from your actual application code) that invokes the code it tests to help determine if there are any errors. It does not prove that code is correct (which is only possible under very restricted circumstances). It merely reports if the conditions the tester thought of are handled correctly._ -__Jeff Knupp__
+.left-column[
+## What is 'testing'?
+]
+.right-column[
+#####<sub>_The practice of writing code (separate from your actual application code) that invokes the code it tests to help determine if there are any errors. It does not prove that code is correct (which is only possible under very restricted circumstances). It merely reports if the conditions that the tester thought of are handled correctly._ -__Jeff Knupp__</sub>
 
-#####_Test-driven development is not about testing. Test-driven development is about development (and design), specifically improving the quality and design of code. The resulting unit tests are just an extremely useful by-product._ -__Jason Diamond__
+#####<sub>_Test-driven development is not about testing. Test-driven development is about development (and design), specifically improving the quality and design of code. The resulting unit tests are just an extremely useful by-product._ -__Jason Diamond__</sub>
 
+* Code that that tests discrete "units" of your application code. These "tests" should always aim to improve the quality of your output, not prove your code correct.
+
+* Testing can only ensure that your code works as expected under particular conditions. It is up to the test writer to provide realistic examples/definitions of those conditions.
+]
 ---
 
 
 
+
+.left-column[
+## What is 'testing'?
+## Why test?
+]
+
+.right-column[
+* Testing allows one to ensure that changes to the code did not break existing functionality
+* Testing forces one to think about the code under unusual conditions, possibly revealing logical errors
+* Good testing requires modular, decoupled code, which is a hallmark of good system design
+]
+---
 
 
 
@@ -59,7 +149,7 @@ class: center, middle
 
 
 
-class: center, middle
+class: center, middle, inverse
 #Example Frameworks
 ---
 
@@ -69,9 +159,10 @@ class: center, middle
 
 
 
-
-##PyUnit AKA unittest
-
+.left-column[
+##PyUnit
+]
+.right-column[
 ```python
 import unittest
 
@@ -86,11 +177,8 @@ class is_oddTests(unittest.TestCase):
     def testTwo(self):
         self.failIf(is_odd(2))
 
-def main():
-    unittest.main()
-
 if __name__ == '__main__':
-    main()
+    unittest.main()
 
 ```
 __Pros__:
@@ -100,6 +188,7 @@ __Pros__:
 __Cons__:
 * LOTS of boilerplate
 * Has a tendency to become slow(er) over time than pytest
+]
 ---
 
 
@@ -107,9 +196,11 @@ __Cons__:
 
 
 
-
+.left-column[
+##PyUnit
 ##Pytest
-
+]
+.right-column[
 ```python
 def is_odd(n):
     return n % 2 == 1
@@ -131,17 +222,22 @@ __Pros__:
 __Cons__:
 * Fair amount of "magic" behind the scenes, can sometimes obscure error output/problems
 * Not built-in to the standard library (meh.)
+]
 ---
 
 
 
 
-
+.left-column[
+##PyUnit
+##PyTest
 ##Doctest
-
+]
+.right-column[
 ```python
 def is_odd(n):
-    """Lines that start with >>> are executed and the output is asserted
+    """Lines that start with >>> are executed and the output
+    on the next line is asserted
 
     >>> is_odd(4)
     False
@@ -165,19 +261,45 @@ __Pros__:
 __Cons__:
 * Docstrings can suffer information overload and not be useful for docs anymore
 * Difficult to express complex scenarios ie - funcargs, mocks, etc
+]
 ---
 
 
 
 
 
-##What to test?
-* Things that fail!
+class: center, middle, inverse
+#How to test?
+---
+
+
+
+layout: false
+.left-column[
+  ## What to test?
+]
+
+.right-column[
+* Things that are likely to fail!
 ```python
 assert randrange(10) == 5
 ```
-* A unit test that has never failed has never provided _information_, ipso facto, tests that have a higher likelihood of failure, have a higher chance of having value.
-*
+* A unit test that has never failed has never provided _information_, ipso facto, tests that have a higher likelihood of failure, have a higher chance of providing information. Tests that exist SOLELY to provide "code coverage" should be _considered harmful_.
+
+* Assertable business logic
+```python
+    def test_allow_five_at_most():
+        with pytest.raises(BusinessLogicException)
+            assert allow_five_at_most(10)
+```
+
+* Things that accept user defined input, never assume the input will be sane
+```python
+    def test_is_odd():
+        with pytest.raises(TypeError)
+            assert is_odd('jeff')
+```
+]
 ---
 
 
@@ -185,11 +307,18 @@ assert randrange(10) == 5
 
 
 
-##What not to test?
+layout: false
+.left-column[
+  ## What to test?
+  ## What not to test?
+]
+
+.right-column[
 * Things that have slim/no chance of failure!
 ```python
 assert 1 + 1 == 2
 ```
+]
 ---
 
 
@@ -200,6 +329,7 @@ assert 1 + 1 == 2
 #Resources
 * http://pythontesting.net/
 * http://docs.python-guide.org/en/latest/writing/tests/
+* http://www.jeffknupp.com/blog/2013/12/09/improve-your-python-understanding-unit-testing/
 
 
 
