@@ -19,7 +19,7 @@
       .remark-slide-content h1 { font-size: 3em; }
       .remark-slide-content h2 { font-size: 2em; }
       .remark-slide-content h3 { font-size: 1.6em; }
-      .remark-slide-content { font-size: 16px;}
+      .remark-slide-content { font-size: 14px;}
       .footnote {
         position: absolute;
         bottom: 3em;
@@ -60,7 +60,7 @@
       .inverse {
         background: #272822;
         color: #777872;
-        text-shadow: 0 0 20px #333;
+        text-shadow: 0 0 20px #978D8D;
       }
       .inverse h1, .inverse h2 {
         color: #f3f3f3;
@@ -88,6 +88,16 @@
         float: right;
         padding-top: 1em;
       }
+      .quote {
+        font-size: .65em;
+        font-style: italic;
+        color: rgb(249, 38, 114);
+      }
+      .name{
+        font-size: .65em;
+        font-style: italic;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
@@ -95,8 +105,8 @@
 
 class: center, middle, inverse
 
-#Python Testing
-###TJ Kells
+#Python Testing - YMMV
+###TJ Kells - CorvisaCloud
 
 ---
 
@@ -111,13 +121,16 @@ class: center, middle, inverse
 ## What is 'testing'?
 ]
 .right-column[
-#####<sub>_The practice of writing code (separate from your actual application code) that invokes the code it tests to help determine if there are any errors. It does not prove that code is correct (which is only possible under very restricted circumstances). It merely reports if the conditions that the tester thought of are handled correctly._ -__Jeff Knupp__</sub>
+##Whats this "testing" business all about?
+ .quote[The practice of writing code (separate from your actual application code) that invokes the code it tests to help determine if there are any errors. It does not prove that code is correct (which is only possible under very restricted circumstances). It merely reports if the conditions that the tester thought of are handled correctly.] .name[-Jeff Knupp]
 
-#####<sub>_Test-driven development is not about testing. Test-driven development is about development (and design), specifically improving the quality and design of code. The resulting unit tests are just an extremely useful by-product._ -__Jason Diamond__</sub>
+ .quote[Test-driven development is not about testing. Test-driven development is about development (and design), specifically improving the quality and design of code. The resulting unit tests are just an extremely useful by-product.] .name[-Jason Diamond]
 
-* Code that that tests discrete "units" of your application code. These "tests" should always aim to improve the quality of your output, not prove your code correct.
+Unit tests are best described as code that that tests discrete "units" of your application code. These "tests" should always aim to improve the quality of your output, not necesarily to prove your code "correct".
 
-* Testing can only ensure that your code works as expected under particular conditions. It is up to the test writer to provide realistic examples/definitions of those conditions.
+For example, a function `get_color` could have a unit test that asserts that it returns _a_ color, but it may not be able to know the circumstances under which the color 'blue' should be returned. Testing can only ensure that your code works as expected under particular conditions. It is up to the test writer to provide realistic examples/definitions of those conditions in which your function would return the given value.
+
+Once you have a large collection of test cases (often referred to as a 'test suite'), your confidence in your ability to make changes to your codebase, your understanding of what the code does, as well as overall confidence of your product should go up. Any of these criteria not being met are signs that something may be off with your process.
 ]
 ---
 
@@ -130,19 +143,34 @@ class: center, middle, inverse
 ]
 
 .right-column[
-* Testing allows one to ensure that changes to the code did not break existing functionality
+## Why should we do it?
+
+* Testing allows one to ensure that changes to the code did not break existing functionality. Providing a higher level of confidence in the future when refactoring and generally making maintenance less scary.
+
 * Testing forces one to think about the code under unusual conditions, possibly revealing logical errors
+
 * Good testing requires modular, decoupled code, which is a hallmark of good system design
+
+* Testing helps you to realise when to stop coding. Your tests give you confidence that you've done enough for now and can stop tweaking and move on to the next thing.
+
+*
 ]
 ---
 
 
 
+.left-column[
+  ## What is 'testing'?
+  ## Why test?
+  ## Unit vs Integration
+]
 
+.right-column[
 ##Unit Testing vs Integration Testing
 * Unit testing: the act of testing a "unit" in your application. In this context, a "unit" is often a function or a method of a class instance
-* Integration testing: the act of testing interaction between two or more "units". Integration tests verify that the components of your application work together. Common examples: HTTP requests, DB connections, email, eg.
 
+* Integration testing: the act of testing interaction between two or more "units". Integration tests verify that the components of your application work together. Eg. testing that module a can import module b, perform some tasks with it, and return a valid result.
+]
 ---
 
 
@@ -274,28 +302,140 @@ class: center, middle, inverse
 
 
 
+
+
 layout: false
 .left-column[
   ## What to test?
 ]
 
 .right-column[
-* Things that are likely to fail!
+
+Unfortunately knowing _how_ to test is only half of the battle, knowing _what_ to test, and sometimes more importantly, what _not_ to test is a very serious challenge. The following are some basic guidelines, but not necesarily black and white rules regarding this topic.
+
+]
+---
+
+
+
+
+layout: false
+.left-column[
+  ## What to test?
+  #### The basics
+]
+
+.right-column[
+###The basics
+A good concept to become familiar with is __Smoke Testing__. This term comes from electronic engineering and refers to whether or not a device catches fire the first time it is turned on. One of the first suites of tests that should be considered is this smoke test.
+
+Does the application bootstrap correctly? Does the window open? Am I able to login to my web app? Ask the simple questions and turn those questions into tests.
+
+
 ```python
+class App(object):
+
+    def __init__(self, name):
+        self.window = self.create_window()
+
+    def create_window(self):
+        return 'SomeWindowClass'
+
+# Assert that my application window exists after bootstrap
+def test_app_creation():
+    assert App('MyApp').window
+```
+]
+---
+
+
+
+
+
+layout: false
+.left-column[
+  ## What to test?
+  #### The basics
+  #### Things Likely to Fail
+]
+
+.right-column[
+###Things that are likely to fail!
+A unit test that has never failed has never provided _information_, ipso facto, tests that have a higher likelihood of failure, have a higher chance of providing information. Tests that exist SOLELY to provide "code coverage" should be _considered harmful_ due to the fact that adding tests of any kind adds real maintenance cost.
+
+The cost of maintaining a test that, in effect, asserts that 1==1 probably outweighs the benefit that test could provide. So try to identify areas of your application that have a high potential for failure and attempt to test any edge case you can think of.
+
+
+```python
+# This test will usually fail, but also provides no information
 assert randrange(10) == 5
 ```
-* A unit test that has never failed has never provided _information_, ipso facto, tests that have a higher likelihood of failure, have a higher chance of providing information. Tests that exist SOLELY to provide "code coverage" should be _considered harmful_.
+]
+---
 
-* Assertable business logic
+
+
+
+
+layout: false
+.left-column[
+  ## What to test?
+  #### The basics
+  #### Things Likely to Fail
+  #### Business Logic
+]
+
+.right-column[
+### Assertable business logic
+The value of your tests lies not in the logic that you are asserting, but in the assertion of your application's intents. Collecting the actual business requirements or user stories gives a good base line for what to test. If your algorithms all work flawlessly, but your users are unable to use to the system as prescribed, then your algorithms don't matter.
+
+In following with our guidelines of __why__ we test, this also provides good documentation for what our logic actually is. Some methodolgies like BDD even go so far as to try and fuse the business logic and test cases into a single shared document.
+
 ```python
-    def test_allow_five_at_most():
-        with pytest.raises(BusinessLogicException)
-            assert allow_five_at_most(10)
+def allow_five_at_most(cnt):
+    '''Make sure those tricky users dont try to have more than 5'''
+
+    if cnt > 5:
+        raise BusinessLogicException('Too many!')
+
+def test_allow_five_at_most():
+    # pytest provides convenient context managers for things
+    # like intending your test to assert failures that
+    # raise exceptions
+    with pytest.raises(BusinessLogicException)
+        assert allow_five_at_most(10)
 ```
+]
+---
 
-* Things that accept user defined input, never assume the input will be sane
+
+
+
+
+layout: false
+.left-column[
+  ## What to test?
+  #### The basics
+  #### Things Likely to Fail
+  #### Business Logic
+  #### Variable Inputs
+]
+
+.right-column[
+### Variable Inputs
+Things that accept user defined input or variable/complex types as input. Never assume that your interface will always be used sanely. Having tests that demonstrate what the intended behavior is when dealing with bad inputs also serves as good documentation for other people using that API.
+
+
 ```python
+    def is_odd(n):
+        return n % 2 == 1
+
     def test_is_odd():
+        # Happy path
+        assert is_odd(1) == True
+        assert is_odd(2) == False
+
+        # Sad path
         with pytest.raises(TypeError)
             assert is_odd('jeff')
 ```
@@ -314,10 +454,7 @@ layout: false
 ]
 
 .right-column[
-* Things that have slim/no chance of failure!
-```python
-assert 1 + 1 == 2
-```
+As important as it is to understand what to test, it is important to understand what not to test. It is important to keep in mind while testing that tests are not magical, simply having code coverage on a function does not mean your application will work. With that in mind it is
 ]
 ---
 
@@ -325,11 +462,123 @@ assert 1 + 1 == 2
 
 
 
+layout: false
+.left-column[
+  ## What to test?
+  ## What not to test?
+  ### Non-failing
+]
+
+.right-column[
+## Non-failing Things
+
+Things that have slim/no chance of failure should, at the very least, be tested last. While the logic below is contrived, if you look hard enough at many of your own unit tests you may find this pattern more than you expect.
+
+This test is not only pointless, it is actively harmful as it both gives a false sense of confidence about the "working-ness" of your application and must be maintained. Some of these tests can easily be replaced with inline doctests that serve as both documentation and provide coverage of sorts.
+
+```python
+def add_one(num):
+    return num + 1
+
+def test_add_one():
+    assert add_one(1) == 2
+```
+
+```python
+def add_one(num):
+    ''' Probably more appropriate as doctests
+    >>> add_one(4)
+    5
+    >>> add_one(1)
+    2
+    >>> add_one('bwayne')
+    Traceback (most recent call last):
+        ...
+    TypeError: cannot concatenate 'str' and 'int' objects
+    '''
+
+    return num + 1
+```
+
+]
+---
+
+
+
+
+layout: false
+.left-column[
+  ## What to test?
+  ## What not to test?
+  ### Non-failing
+  ### External Services
+]
+
+.right-column[
+## External Services
+Depending on the application, you may rely heavily on external services, things like HTTP servers, databases, etc. While your application may not work if these things go down, that is not the place of a unit test to assert that these things are up. Our unit test should only assert the behavior of the data that these external services return.
+
+Enter the __mock__ object. It is the job of mocks to mock-up the behavior of these API's and handle your requests accordingly. The simplest example of these would be an HTTP mock. Given a function like `get_google` our test with a mock might look something like the following. The `HTTMock` library will take our request and return a complex obj that behaves like the expected requests object. That way our tests pass even if we don't have internet access or, god forbid, google is down.
+
+
+```python
+def get_google():
+    return requests.get('http://google.com')
+
+
+def google_mock(url, request):
+    return 'Feeling lucky, punk?'
+
+def test_get_google():
+    with HTTMock(google_mock):
+        assert get_google() == 'Feeling lucky, punk?'
+```
+]
+---
+
+
+
+
+layout: false
+.left-column[
+  ## What to test?
+  ## What not to test?
+  ### Non-failing
+  ### External Services
+  ### Complex Systems
+]
+
+.right-column[
+## Complex Systems
+Ignoring the blanket potential of this statement, some things are simply too complicated to test accurately/completely with unit tests alone. Generally these would be cases for either an _integration test_ or an even higher level _systems test_.
+
+For example, if your application institutes a fairly complex oAuth method for logging in, it may be very difficult to correctly mock all of the external services required at the unit level. This is, however, very _easy_ to test at a higher level, simply create a test client that actually performs a real login against live systems. Even this can at times be impossible with code alone, this is where having a real QA team is a lifesaver. Often simply having a test version of your application running with humans performing __autonomated__ test scripts is the most complete way of testing complex systems.
+]
+---
+
+
+
+
+class: center, middle, inverse
+
+#Questions?
+---
+
+
+
+
+class: center, middle, inverse
 
 #Resources
-* http://pythontesting.net/
-* http://docs.python-guide.org/en/latest/writing/tests/
-* http://www.jeffknupp.com/blog/2013/12/09/improve-your-python-understanding-unit-testing/
+
+http://pythontesting.net/
+
+http://docs.python-guide.org/en/latest/writing/tests/
+
+http://www.jeffknupp.com/blog/2013/12/09/improve-your-python-understanding-unit-testing/
+
+https://cleancoders.com/
+
 
 
 
